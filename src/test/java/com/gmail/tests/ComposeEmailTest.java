@@ -1,4 +1,4 @@
-package com.gmail.test.Automation;
+package com.gmail.tests;
 
 import org.testng.annotations.Test;
 
