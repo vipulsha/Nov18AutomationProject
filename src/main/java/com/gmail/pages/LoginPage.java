@@ -7,6 +7,9 @@ import org.openqa.selenium.support.PageFactory;
 
 import com.gmail.utils.PageUtils;
 
+import atu.testng.reports.ATUReports;
+import atu.testng.reports.logging.LogAs;
+
 public class LoginPage extends PageUtils {
 	
 	@FindBy(id="identifierId") WebElement textbox_EmailId;
@@ -21,9 +24,15 @@ public class LoginPage extends PageUtils {
 	
 	public void login(String username, String password) {
 		enterText(textbox_EmailId, username);
+		ATUReports.add("Enter email id", username, LogAs.PASSED, null);
+		
 		click(button_Next);
+		ATUReports.add("Click on Next button", LogAs.PASSED, null);
+		
 		enterText(textbox_Password, password);
+		ATUReports.add("Enter password", password, LogAs.PASSED, null);
+		
 		click(button_Next);
+		ATUReports.add("Click on Next button", LogAs.PASSED, null);
 	}
-	
 }

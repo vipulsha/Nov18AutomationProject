@@ -5,12 +5,15 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import atu.testng.reports.ATUReports;
+import atu.testng.reports.logging.LogAs;
+
 public class PageUtils {
 
 	WebDriverWait wait;
 	
 	public PageUtils(WebDriver driver) {
-		wait = new WebDriverWait(driver, 15);
+		wait = new WebDriverWait(driver, 10);
 	}
 	
 	public void waitForVisibilityOfElement(WebElement element) {
@@ -23,6 +26,7 @@ public class PageUtils {
 	
 	public boolean isTextPresentInTitle(String text) {
 		try {
+			ATUReports.add("Verifying text in title", text, LogAs.PASSED, null);
 			return wait.until(ExpectedConditions.titleContains(text));
 		} catch (Exception e) {
 			return false;

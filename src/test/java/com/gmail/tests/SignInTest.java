@@ -7,17 +7,22 @@ import com.gmail.pages.InboxPage;
 import com.gmail.pages.LoginPage;
 import com.gmail.utils.TestUtils;
 
+import atu.testng.reports.ATUReports;
+import atu.testng.reports.logging.LogAs;
+import atu.testng.selenium.reports.CaptureScreen;
+import atu.testng.selenium.reports.CaptureScreen.ScreenshotOf;
+
 public class SignInTest extends TestUtils {
 	
 	@Test
 	public void signInTest() {
-		LoginPage loginPage = new LoginPage(driver);
-		loginPage.login(getData("username"), getData("password"));
-//		loginPage.login(testData.get("username").toString(), testData.get("password1").toString());
-		InboxPage inboxPage = new InboxPage(driver);
-		
-		// How to use TestNg Assertion
-		Assert.assertTrue(inboxPage.isUserLoggedIn(getData("username")), "User is NOT logged in");
+		try {
+			LoginPage loginPage = new LoginPage(driver);
+			loginPage.login(getData("username"), getData("password"));
+			InboxPage inboxPage = new InboxPage(driver);
+			Assert.assertTrue(inboxPage.isUserLoggedIn(getData("username")), "User is NOT logged in");
+		} catch (Throwable e) {
+			ATUReports.add("Failed: "+e.getMessage(), LogAs.FAILED, new CaptureScreen(ScreenshotOf.BROWSER_PAGE));
+		}
 	}
-
 }

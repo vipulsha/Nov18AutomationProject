@@ -4,10 +4,11 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.gmail.utils.PageUtils;
+
+import atu.testng.reports.ATUReports;
+import atu.testng.reports.logging.LogAs;
 
 public class InboxPage extends PageUtils {
 	WebDriver driver;
@@ -20,6 +21,12 @@ public class InboxPage extends PageUtils {
 	}
 
 	public boolean isUserLoggedIn(String userName) {
-		return isTextPresentInTitle(userName);
+		if (isTextPresentInTitle(userName)) {
+			ATUReports.add("User is logged in", userName, LogAs.PASSED, null);
+			return true;
+		} else {
+			ATUReports.add("User is not logged in", userName, LogAs.PASSED, null);
+			return false;
+		}
 	}
 }
