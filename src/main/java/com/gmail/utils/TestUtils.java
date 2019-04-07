@@ -6,11 +6,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Listeners;
 
 import atu.testng.reports.ATUReports;
@@ -19,20 +19,17 @@ import atu.testng.reports.listeners.ConfigurationListener;
 import atu.testng.reports.listeners.MethodListener;
 import atu.testng.reports.logging.LogAs;
 
-@Listeners({ ATUReportsListener.class, ConfigurationListener.class,
-	  MethodListener.class })
+@Listeners({ ATUReportsListener.class, ConfigurationListener.class, MethodListener.class })
 public class TestUtils {
 	protected WebDriver driver = null;
 	Properties testData = null;
-
-	{
-//		System.setProperty("atu.reporter.config", Paths.get(".").toAbsolutePath().normalize().toString()+"\\atu.properties");
-		System.setProperty("atu.reporter.config", System.getProperty("user.dir")+"\\src\\test\\resources\\atu\\atu.properties");
-	}
+	String className = this.getClass().getSimpleName();
+//	protected CustomLogger logger = new CustomLogger(className);
+	protected Logger logger = Logger.getLogger(TestUtils.class);
 	
-	@BeforeSuite
-	public void beforeSuite() {
-//		ATUReports.indexPageDescription = "Gmail Automation";
+	{
+		System.setProperty("atu.reporter.config",
+				System.getProperty("user.dir") + "\\src\\test\\resources\\atu\\atu.properties");
 	}
 
 	@BeforeMethod
@@ -40,8 +37,9 @@ public class TestUtils {
 		// Get test data
 		testData = new Properties();
 		try {
-			String className = this.getClass().getSimpleName();
-			String filePath = System.getProperty("user.dir")+"\\src\\test\\resources\\DataFiles\\"+className+".properties";
+			
+			String filePath = System.getProperty("user.dir") + "\\src\\test\\resources\\DataFiles\\" + className
+					+ ".properties";
 			testData.load(new FileInputStream(new File(filePath)));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -51,9 +49,6 @@ public class TestUtils {
 
 		System.setProperty("webdriver.chrome.driver", "D:\\Vipul_Imp\\Softwares\\Drivers\\chromedriver.exe");
 		driver = new ChromeDriver();
-//		String atuPath = System.getProperty("user.dir")+"\\atu.properties";
-//		System.setProperty("atu.reporter.config", atuPath);
-		
 		ATUReports.setWebDriver(driver);
 		driver.manage().window().maximize();
 		String baseUrl = "http://gmail.com";
@@ -62,7 +57,7 @@ public class TestUtils {
 	}
 
 	public String getData(String key) {
-		return testData.get(key)==null?"" : testData.get(key).toString();
+		return testData.get(key) == null ? "" : testData.get(key).toString();
 	}
 
 	@AfterMethod

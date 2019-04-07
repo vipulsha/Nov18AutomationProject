@@ -22,6 +22,8 @@ public class SignInTest extends TestUtils {
 			InboxPage inboxPage = new InboxPage(driver);
 			Assert.assertTrue(inboxPage.isUserLoggedIn(getData("username")), "User is NOT logged in");
 		} catch (Throwable e) {
+//			logger.fail("Failed: "+e.getMessage());
+			logger.error("Failed: "+e.getMessage());
 			ATUReports.add("Failed: "+e.getMessage(), LogAs.FAILED, new CaptureScreen(ScreenshotOf.BROWSER_PAGE));
 		}
 	}
