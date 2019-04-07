@@ -38,5 +38,24 @@
 			<version>6.8</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.atu.reports</groupId>
+			<artifactId>atu</artifactId>
+			<version>5.1</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/lib/ATUReporter_Selenium_testNG_5.1.1.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>org.atu.reports</groupId>
+			<artifactId>atu2</artifactId>
+			<version>2.1</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/lib/ATUTestRecorder_2.1.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
+		</dependency>
 	</dependencies>
 </project>

@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite name="Suite">
-  <test thread-count="5" name="Test">
+<suite name="Suite" parallel="tests">
+  <test thread-count="5" name="Test" parallel="classes">
     <classes>
-      <class name="com.gmail.test.Automation.SignInTest"/>
-      <!-- <class name="com.gmail.test.Automation.ComposeEmailTest"/> -->
+      <class name="com.gmail.tests.SignInTest"/>
+      <class name="com.gmail.tests.ComposeEmailTest"/>
+    </classes>
+  </test> <!-- Test -->
+  <test thread-count="5" name="Test2" parallel="classes">
+    <classes>
+      <class name="com.gmail.tests.SignInTest"/>
+      <class name="com.gmail.tests.ComposeEmailTest"/>
+    </classes>
+  </test> <!-- Test -->
+  <test thread-count="5" name="Test3" parallel="classes">
+    <classes>
+      <class name="com.gmail.tests.SignInTest"/>
+      <class name="com.gmail.tests.ComposeEmailTest"/>
     </classes>
   </test> <!-- Test -->
 </suite> <!-- Suite -->
