@@ -62,7 +62,7 @@ public class TestUtils {
 		capabilities.setJavascriptEnabled(true);
 		
 		try {
-			driver = new RemoteWebDriver(new URL("http://192.168.1.18:4444/wd/hub"), capabilities);
+			driver = new RemoteWebDriver(new URL("http://192.168.1.9:4444/wd/hub"), capabilities);
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
