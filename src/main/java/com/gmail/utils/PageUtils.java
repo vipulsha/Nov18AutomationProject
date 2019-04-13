@@ -15,10 +15,15 @@ public class PageUtils {
 	WebDriverWait wait;
 	protected @FindBy(xpath="//span[@class='bAq']") WebElement notificationMessage;
 	Logger logger = Logger.getLogger(PageUtils.class);
+	private static int WAIT_TIMEOUT = 10;
 	
 	public PageUtils(WebDriver driver) {
 		wait = new WebDriverWait(driver, 15);
 		PageFactory.initElements(driver, this);
+	}
+	
+	public static void setTimeout(int sec) {
+		WAIT_TIMEOUT = sec;
 	}
 	
 	public void waitForVisibilityOfElement(WebElement element) {

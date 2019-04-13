@@ -54,30 +54,53 @@ public class TestUtils {
 			e.printStackTrace();
 		}
 
-//		System.setProperty("webdriver.chrome.driver", "D:\\Vipul_Imp\\Softwares\\Drivers\\chromedriver.exe");
-		
-		DesiredCapabilities capabilities = DesiredCapabilities.chrome();
-//		capabilities.setBrowserName("chrome");
-//		capabilities.setPlatform(Platform.WIN10);
-		capabilities.setJavascriptEnabled(true);
-		
+		//		System.setProperty("webdriver.chrome.driver", "D:\\Vipul_Imp\\Softwares\\Drivers\\chromedriver.exe");
+
+
+
+		String gridHubUrl = System.getenv("GRID_HUB_URL");
+		String browser = null;
+		String baseUrl = null;
+		String waitTimout = null;
+
+		if (gridHubUrl != null && !gridHubUrl.equals("")) {
+			logger.info("Config parameters are being used from: Jenkins");
+			browser = System.getenv("BROWSER");
+			baseUrl = System.getenv("BASE_URL");
+			waitTimout = System.getenv("WAIT_TIMEOUT");
+		} else {
+			logger.info("Config parameters are being used from: config.properties");
+		}
+
+
+		System.out.println(gridHubUrl);
+
+		DesiredCapabilities capabilities = null;
+
 		try {
-			String gridHubUrl = System.getenv("GRID_HUB_URL");
-			String browser = System.getenv("BROWSER");
-			String baseUrl = System.getenv("BASE_URL");
-			String waitTimout = System.getenv("WAIT_TIMEOUT");
-			
-			System.out.println(gridHubUrl);
-			
-			driver = new RemoteWebDriver(new URL("http://192.168.1.9:4444/wd/hub"), capabilities);
+			logger.info("Running test on browser: "+browser);
+			if (browser != null && browser.equalsIgnoreCase("CHROME")) {
+				capabilities = DesiredCapabilities.chrome();
+			} else if (browser != null && browser.equalsIgnoreCase("IE")) {
+				capabilities = DesiredCapabilities.internetExplorer();
+			} else if (browser != null && browser.equalsIgnoreCase("FIREFOX")) {
+				capabilities = DesiredCapabilities.firefox();
+			} else {
+				logger.error("Invalid browser selected");
+				System.exit(0);
+			}
+
+			capabilities.setJavascriptEnabled(true);
+			driver = new RemoteWebDriver(new URL(gridHubUrl), capabilities);
+			if (waitTimout != null && !waitTimout.equals("")) {
+				PageUtils.setTimeout(Integer.parseInt(waitTimout));
+			}
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		logger.info("Launched browser: CHROME");
 		ATUReports.setWebDriver(driver);
-		String baseUrl = "https://accounts.google.com/signin/v2/identifier";
 		driver.get(baseUrl);
 		logger.info("Navigated to url: "+baseUrl);
 		ATUReports.add("Navigated to url", baseUrl, LogAs.PASSED, null);
