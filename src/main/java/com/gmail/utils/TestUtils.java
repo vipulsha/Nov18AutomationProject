@@ -62,6 +62,13 @@ public class TestUtils {
 		capabilities.setJavascriptEnabled(true);
 		
 		try {
+			String gridHubUrl = System.getenv("GRID_HUB_URL");
+			String browser = System.getenv("BROWSER");
+			String baseUrl = System.getenv("BASE_URL");
+			String waitTimout = System.getenv("WAIT_TIMEOUT");
+			
+			System.out.println(gridHubUrl);
+			
 			driver = new RemoteWebDriver(new URL("http://192.168.1.9:4444/wd/hub"), capabilities);
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
