@@ -126,13 +126,20 @@ public class TestUtils {
 		try {
 			if (executionType != null && executionType.equalsIgnoreCase("LOCAL")) {
 				logger.info("Running test on local: "+browser);
+				String driverPath = getConfig("driverPath");
+				if (driverPath == null || driverPath.equals("")) {
+					logger.error("Driver path is not specified");
+					System.exit(0);
+				}
+				
 				if (browser != null && browser.equalsIgnoreCase("CHROME")) {
-					System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"\\src\\test\\resources\\Drivers\\chromedriver.exe");					
+					System.setProperty("webdriver.chrome.driver", driverPath);					
 					driver = new ChromeDriver();
 				} else if (browser != null && browser.equalsIgnoreCase("IE")) {
+					System.setProperty("webdriver.ie.driver", driverPath);
 					driver = new InternetExplorerDriver();
 				} else if (browser != null && browser.equalsIgnoreCase("FIREFOX")) {
-					System.setProperty("webdriver.gecko.driver", System.getProperty("user.dir")+"\\src\\test\\resources\\Drivers\\gecko.exe");					
+					System.setProperty("webdriver.gecko.driver", driverPath);					
 					driver = new FirefoxDriver();
 				} else {
 					logger.error("Invalid browser selected");
