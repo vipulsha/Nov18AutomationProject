@@ -10,13 +10,14 @@ import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import org.openqa.selenium.Platform;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Listeners;
 
 import atu.testng.reports.ATUReports;
@@ -39,6 +40,19 @@ public class TestUtils {
 	protected RemoteWebDriver driver = null;
 	Properties testData = null;
 	Logger logger = Logger.getLogger(TestUtils.class);
+	static Properties configProp = null;
+	
+	@BeforeSuite
+	public void beforeSuite() {
+		configProp = new Properties();
+		try {
+			configProp.load(new FileInputStream(new File(System.getProperty("user.dir")+"\\src\\test\\resources\\Config\\config.properties")));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	@BeforeMethod
 	public void setUp() {
@@ -53,63 +67,18 @@ public class TestUtils {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		//		System.setProperty("webdriver.chrome.driver", "D:\\Vipul_Imp\\Softwares\\Drivers\\chromedriver.exe");
-
-
-
-		String gridHubUrl = System.getenv("GRID_HUB_URL");
-		String browser = null;
-		String baseUrl = null;
-		String waitTimout = null;
-
-		if (gridHubUrl != null && !gridHubUrl.equals("")) {
-			logger.info("Config parameters are being used from: Jenkins");
-			browser = System.getenv("BROWSER");
-			baseUrl = System.getenv("BASE_URL");
-			waitTimout = System.getenv("WAIT_TIMEOUT");
-		} else {
-			logger.info("Config parameters are being used from: config.properties");
-		}
-
-
-		System.out.println(gridHubUrl);
-
-		DesiredCapabilities capabilities = null;
-
-		try {
-			logger.info("Running test on browser: "+browser);
-			if (browser != null && browser.equalsIgnoreCase("CHROME")) {
-				capabilities = DesiredCapabilities.chrome();
-			} else if (browser != null && browser.equalsIgnoreCase("IE")) {
-				capabilities = DesiredCapabilities.internetExplorer();
-			} else if (browser != null && browser.equalsIgnoreCase("FIREFOX")) {
-				capabilities = DesiredCapabilities.firefox();
-			} else {
-				logger.error("Invalid browser selected");
-				System.exit(0);
-			}
-
-			capabilities.setJavascriptEnabled(true);
-			driver = new RemoteWebDriver(new URL(gridHubUrl), capabilities);
-			if (waitTimout != null && !waitTimout.equals("")) {
-				PageUtils.setTimeout(Integer.parseInt(waitTimout));
-			}
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-
-		logger.info("Launched browser: CHROME");
-		ATUReports.setWebDriver(driver);
-		driver.get(baseUrl);
-		logger.info("Navigated to url: "+baseUrl);
-		ATUReports.add("Navigated to url", baseUrl, LogAs.PASSED, null);
+		
+		launchBrowser();
 	}
 
 	public String getData(String key) {
 		return testData.get(key)==null?"" : testData.get(key).toString();
 	}
 
+	public String getConfig(String key) {
+		return configProp.getProperty(key)==null?"" : configProp.getProperty(key).toString();
+	}
+	
 	@AfterMethod
 	public void tearDown() {
 		driver.quit();
@@ -120,5 +89,88 @@ public class TestUtils {
 	public void logFailure(String message) {
 		logger.error(message);
 		ATUReports.add("Failed with message: "+message, "", LogAs.FAILED, new CaptureScreen(ScreenshotOf.BROWSER_PAGE));
+	}
+	
+	public void launchBrowser() {
+		String gridHubUrl = System.getenv("GRID_HUB_URL");
+		String browser = null;
+		String baseUrl = null;
+		String waitTimeout = null;
+		String executionType = null;
+		
+		if (gridHubUrl != null && !gridHubUrl.equals("")) {
+			logger.info("Config parameters are being used from: Jenkins");
+			browser = System.getenv("BROWSER");
+			baseUrl = System.getenv("BASE_URL");
+			waitTimeout = System.getenv("WAIT_TIMEOUT");
+		} else {
+			logger.info("Config parameters are being used from: config.properties");
+			baseUrl = getConfig("baseUrl");
+			waitTimeout = getConfig("waitTimeout");
+			browser = getConfig("browserType");
+			executionType = getConfig("executionType");
+			gridHubUrl = getConfig("gridHubUrl");
+		}
+
+		if (baseUrl == null || baseUrl.equals("")) {
+			logger.error("Base url not specified.");
+			System.exit(0);
+		}
+		
+		if (browser == null || browser.equals("")) {
+			browser = "CHROME";
+		}
+		
+		DesiredCapabilities capabilities = null;
+
+		try {
+			if (executionType != null && executionType.equalsIgnoreCase("LOCAL")) {
+				logger.info("Running test on local: "+browser);
+				if (browser != null && browser.equalsIgnoreCase("CHROME")) {
+					System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"\\src\\test\\resources\\Drivers\\chromedriver.exe");					
+					driver = new ChromeDriver();
+				} else if (browser != null && browser.equalsIgnoreCase("IE")) {
+					driver = new InternetExplorerDriver();
+				} else if (browser != null && browser.equalsIgnoreCase("FIREFOX")) {
+					System.setProperty("webdriver.gecko.driver", System.getProperty("user.dir")+"\\src\\test\\resources\\Drivers\\gecko.exe");					
+					driver = new FirefoxDriver();
+				} else {
+					logger.error("Invalid browser selected");
+					System.exit(0);
+				}
+			} else {
+				if (gridHubUrl == null || gridHubUrl.equals("")) {
+					logger.error("GridHubURL is not specified.");
+					System.exit(0);
+				}
+
+				logger.info("Running test on Selenium Grid: "+gridHubUrl);
+				
+				if (browser != null && browser.equalsIgnoreCase("CHROME")) {
+					capabilities = DesiredCapabilities.chrome();
+				} else if (browser != null && browser.equalsIgnoreCase("IE")) {
+					capabilities = DesiredCapabilities.internetExplorer();
+				} else if (browser != null && browser.equalsIgnoreCase("FIREFOX")) {
+					capabilities = DesiredCapabilities.firefox();
+				} else {
+					logger.error("Invalid browser selected");
+					System.exit(0);
+				}
+				capabilities.setJavascriptEnabled(true);
+				driver = new RemoteWebDriver(new URL(gridHubUrl), capabilities);
+			}
+			
+			if (waitTimeout != null && !waitTimeout.equals("")) {
+				PageUtils.setTimeout(Integer.parseInt(waitTimeout));
+			}
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+
+		logger.info("Launched browser: CHROME");
+		ATUReports.setWebDriver(driver);
+		driver.get(baseUrl);
+		logger.info("Navigated to url: "+baseUrl);
+		ATUReports.add("Navigated to url", baseUrl, LogAs.PASSED, null);
 	}
 }
